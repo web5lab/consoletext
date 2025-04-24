@@ -1,0 +1,49 @@
+{
+  "name": "consoletext",
+  "version": "1.0.4",
+  "description": "Enhanced console logging with remote capabilities",
+  "main": "index.js",
+  "types": "src/types.d.ts",
+  "scripts": {
+    "test": "jest",
+    "examples": "node examples/basic.js",
+    "prepublishOnly": "npm test",
+    "prepare": "npm test"
+  },
+  "keywords": [
+    "console",
+    "logging",
+    "colorize",
+    "remote",
+    "log",
+    "debug",
+    "logger"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "axios": "^1.6.0",
+    "chalk": "^4.1.2"
+  },
+  "devDependencies": {
+    "jest": "^29.7.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/web5lab/consoleText.git"
+  },
+  "bugs": {
+    "url": "https://github.com/web5lab/consoleText/issues"
+  },
+  "homepage": "https://github.com/web5lab/consoleText#readme",
+  "files": [
+    "index.js",
+    "src/**/*",
+    "examples/**/*",
+    "README.md",
+    "LICENSE"
+  ],
+  "engines": {
+    "node": ">=12.0.0"
+  }
+}
