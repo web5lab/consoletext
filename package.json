@@ -35,7 +35,7 @@
   "bugs": {
     "url": "https://github.com/web5lab/consoleText/issues"
   },
-  "homepage": "https://github.com/web5lab/consoleText#readme",
+  "homepage": "https://consoletext.xyz/",
   "files": [
     "index.js",
     "src/**/*",
