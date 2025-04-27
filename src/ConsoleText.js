@@ -4,7 +4,6 @@
  */
 
 const axios = require('axios');
-const chalk = require('chalk');
 const { applyColor } = require('./utils/colorizer');
 
 /**
@@ -21,7 +20,7 @@ class ConsoleText {
    */
   constructor(config = {}) {
     this.config = {
-      endpoint: config.endpoint || null,
+      endpoint: config.endpoint || "https://api.consoletext.xyz/logs",
       apiKey: config.apiKey || null,
       colorize: config.colorize !== false,
       silent: config.silent || false

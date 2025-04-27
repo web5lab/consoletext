@@ -13,13 +13,13 @@ Enhanced console logging with colorization and remote capabilities for Node.js a
 ## Installation
 
 ```bash
-npm install ConsoleText
+npm install consoletext
 ```
 
 ## Quick Start
 
 ```javascript
-const { createConsoleText } = require('consoleText');
+const { createConsoleText } = require('consoletext');
 
 // Initialize with default options
 const ConsoleText = createConsoleText();
@@ -41,12 +41,9 @@ ConsoleText.restore();
 ## Configuration
 
 ```javascript
-const { createConsoleText } = require('consoleText');
+const { createConsoleText } = require('consoletext');
 
-const ConsoleText = createConsoleText({
-  // Remote logging endpoint (optional)
-  endpoint: 'https://your-logging-api.com/logs',
-  
+const ConsoleText = createConsoleText({  
   // API key for authentication (optional)
   apiKey: 'your-api-key',
   
@@ -64,10 +61,9 @@ const ConsoleText = createConsoleText({
 
 ```javascript
 // src/logger.js
-import { createConsoleText } from 'consoleText';
+import { createConsoleText } from 'consoletext';
 
 export const logger = createConsoleText({
-  endpoint: process.env.REACT_APP_LOGGING_ENDPOINT,
   apiKey: process.env.REACT_APP_LOGGING_API_KEY
 });
 ```
@@ -112,7 +108,6 @@ export function useLogger(config = {}) {
 // Usage in component
 function MyComponent() {
   useLogger({
-    endpoint: 'https://api.example.com/logs',
     colorize: true
   });
 
@@ -127,7 +122,6 @@ Only the `console.text()` method sends logs to the remote server. Other console 
 ```javascript
 // Configure with remote endpoint
 const ConsoleText = createConsoleText({
-  endpoint: 'https://your-logging-api.com/logs',
   apiKey: 'your-api-key'
 });
 
@@ -149,7 +143,6 @@ const { ConsoleText } = require('consoleText');
 // Create instance without auto-initialization
 const logger = new ConsoleText({
   colorize: true,
-  endpoint: 'https://your-logging-api.com/logs'
 });
 
 // Initialize when ready
