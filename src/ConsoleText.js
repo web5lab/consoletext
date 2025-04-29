@@ -17,13 +17,17 @@ class ConsoleText {
    * @param {string} [config.apiKey] - API key for authentication with remote endpoint
    * @param {boolean} [config.colorize=true] - Whether to colorize console output
    * @param {boolean} [config.silent=false] - Whether to suppress console output
+   * @param {string} [config.name] - Name for logger instance
+   * @param {Array} [config.allowedLevels] - Array of allowed levels for remote logging
    */
   constructor(config = {}) {
     this.config = {
       endpoint: config.endpoint || "https://api.consoletext.xyz/logs",
       apiKey: config.apiKey || null,
       colorize: config.colorize !== false,
-      silent: config.silent || false
+      silent: config.silent || false,
+      name: config.name || 'ConsoleText',
+      allowedLevels: config.allowedLevels || ['text']
     };
 
     // Store original console methods
@@ -63,9 +67,12 @@ class ConsoleText {
       };
     });
 
-    // Add custom text method (only this sends to server)
+    // Add custom text method (send to server if configured)
     console.text = (...args) => {
-      if (this.config.endpoint) {
+      if (
+        this.config.endpoint &&
+        this.config.allowedLevels.includes('text')
+      ) {
         this._sendToServer('text', args);
       }
       if (!this.config.silent) {
@@ -77,12 +84,19 @@ class ConsoleText {
   }
 
   /**
-   * Handle log output (without server sending)
+   * Handle log output (send to server if configured & allowed)
    * @private
    * @param {string} level - Log level
    * @param {Array} args - Arguments to log
    */
   _handleLog(level, args) {
+    // Send to server if endpoint & allowed
+    if (
+      this.config.endpoint &&
+      this.config.allowedLevels.includes(level)
+    ) {
+      this._sendToServer(level, args);
+    }
     // Output to console only
     if (!this.config.silent) {
       this._applyColorAndLog(level, ...args);
@@ -100,13 +114,12 @@ class ConsoleText {
       this.originalConsole[level === 'text' ? 'log' : level](...args);
       return;
     }
-
     const colorized = applyColor(level, args);
     this.originalConsole[level === 'text' ? 'log' : level](...colorized);
   }
 
   /**
-   * Send logs to server (only for text method)
+   * Send logs to server (only if configured & allowed)
    * @private
    * @param {string} level - Log level
    * @param {Array} args - Arguments to log
@@ -118,7 +131,8 @@ class ConsoleText {
     const logData = {
       level,
       message: args.map(arg => typeof arg === 'object' ? JSON.stringify(arg) : arg).join(' '),
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
+      name: this.config.name
     };
 
     try {
@@ -146,10 +160,10 @@ class ConsoleText {
     Object.keys(this.originalConsole).forEach(method => {
       console[method] = this.originalConsole[method];
     });
-    
+
     // Remove custom methods
     delete console.text;
-    
+
     return this;
   }
 }

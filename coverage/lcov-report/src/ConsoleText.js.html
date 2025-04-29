@@ -23,16 +23,16 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">88.09% </span>
+                <span class="strong">87.8% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>37/42</span>
+                <span class='fraction'>36/41</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">62.96% </span>
+                <span class="strong">66.66% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>17/27</span>
+                <span class='fraction'>18/27</span>
             </div>
         
             
@@ -44,9 +44,9 @@
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">90% </span>
+                <span class="strong">89.74% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>36/40</span>
+                <span class='fraction'>35/39</span>
             </div>
         
             
@@ -219,13 +219,11 @@
 <a name='L154'></a><a href='#L154'>154</a>
 <a name='L155'></a><a href='#L155'>155</a>
 <a name='L156'></a><a href='#L156'>156</a>
-<a name='L157'></a><a href='#L157'>157</a>
-<a name='L158'></a><a href='#L158'>158</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L157'></a><a href='#L157'>157</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -289,7 +287,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">6x</span>
 <span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-yes">2x</span>
@@ -336,24 +334,24 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -383,7 +381,6 @@
  */
 &nbsp;
 const axios = require('axios');
-const chalk = require('chalk');
 const { applyColor } = require('./utils/colorizer');
 &nbsp;
 /**
@@ -400,7 +397,7 @@ class ConsoleText {
    */
   constructor(config = {}) {
     this.config = {
-      endpoint: config.endpoint || null,
+      endpoint: config.endpoint || "https://api.consoletext.xyz/logs",
       apiKey: config.apiKey || null,
       colorize: config.colorize !== false,
       silent: config.silent || false
@@ -445,7 +442,7 @@ class ConsoleText {
 &nbsp;
     // Add custom text method (only this sends to server)
     console.text = (...args) =&gt; {
-      if (this.config.endpoint) {
+      <span class="missing-if-branch" title="else path not taken" >E</span>if (this.config.endpoint) {
         this._sendToServer('text', args);
       }
       <span class="missing-if-branch" title="else path not taken" >E</span>if (!this.config.silent) {
@@ -497,7 +494,7 @@ class ConsoleText {
 &nbsp;
     const logData = {
       level,
-      message: args.map(arg =&gt; typeof arg === 'object' ? <span class="branch-0 cbranch-no" title="branch not covered" >JSON.stringify(arg) </span>: arg).join(' '),
+      message: args.map(arg =&gt; typeof arg === 'object' ? JSON.stringify(arg) : arg).join(' '),
       timestamp: new Date().toISOString()
     };
 &nbsp;
@@ -506,7 +503,7 @@ class ConsoleText {
         'Content-Type': 'application/json'
       };
 &nbsp;
-      <span class="missing-if-branch" title="else path not taken" >E</span>if (this.config.apiKey) {
+      if (this.config.apiKey) {
         headers['Authorization'] = `Bearer ${this.config.apiKey}`;
       }
 &nbsp;
@@ -541,7 +538,7 @@ module.exports = ConsoleText;</pre></td></tr></table></pre>
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-04-24T18:56:59.952Z
+                at 2025-04-27T17:36:41.764Z
             </div>
         <script src="../prettify.js"></script>
         <script>

@@ -2,7 +2,7 @@
  * Type definitions for ConsoleText
  */
 
-declare module 'consoleText' {
+declare module 'consoletext' {
   /**
    * Configuration options for ConsoleText
    */
@@ -28,6 +28,19 @@ declare module 'consoleText' {
      * @default false
      */
     silent?: boolean;
+
+    /**
+     * Name for the logger instance (included in server logs)
+     * @default 'ConsoleText'
+     */
+    name?: string;
+
+    /**
+     * Array of allowed log levels that will be sent to the remote server
+     * For example: ['log', 'info', 'warn', 'error', 'debug', 'text']
+     * @default ['text']
+     */
+    allowedLevels?: string[];
   }
 
   /**
@@ -63,6 +76,7 @@ declare global {
   interface Console {
     /**
      * Custom log method that sends logs to the remote server if configured
+     * (Only sends if endpoint and allowedLevels include 'text')
      */
     text(...data: any[]): void;
   }

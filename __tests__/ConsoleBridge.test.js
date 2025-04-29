@@ -36,7 +36,7 @@ describe('ConsoleText', () => {
 
   test('should create instance with default config', () => {
     expect(consoleText.config).toEqual({
-      endpoint: null,
+      endpoint: "https://api.consoletext.xyz/logs",
       apiKey: null,
       colorize: true,
       silent: false
