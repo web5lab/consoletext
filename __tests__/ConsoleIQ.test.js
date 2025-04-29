@@ -39,7 +39,9 @@ describe('ConsoleIQ', () => {
       endpoint: "https://api.consoleiq.xyz/logs",
       apiKey: null,
       colorize: true,
-      silent: false
+      silent: false,
+      name: 'ConsoleIQ',
+      allowedLevels: ['text', 'error']
     });
   });
 
@@ -47,8 +49,10 @@ describe('ConsoleIQ', () => {
     const config = {
       endpoint: 'https://test.com',
       apiKey: 'test-key',
+      name: 'TestLogger',
       colorize: false,
-      silent: true
+      silent: true,
+      allowedLevels: ['text']
     };
     const instance = new ConsoleIQ(config);
     expect(instance.config).toEqual(config);
