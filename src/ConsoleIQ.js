@@ -32,7 +32,7 @@ class ConsoleIQ {
       colorize: config.colorize !== false,
       silent: config.silent || false,
       name: config.name || 'ConsoleIQ',
-      allowedLevels: config.allowedLevels || ['log', 'info', 'warn', 'error', 'debug', 'text'],
+      allowedLevels: config.allowedLevels || ['error', 'text'],
       captureGlobalErrors: config.captureGlobalErrors !== false,
       captureUnhandledRejections: config.captureUnhandledRejections !== false,
       captureConsoleErrors: config.captureConsoleErrors !== false,
@@ -73,12 +73,12 @@ class ConsoleIQ {
    * @returns {ConsoleIQ} - The current instance for chaining
    */
   init() {
-    if (this._initialized) return this;
-    
-    // Override standard console methods
+    this._consoleWrappers = {};
+
     const standardMethods = ['log', 'info', 'warn', 'error', 'debug'];
     standardMethods.forEach(method => {
-      console[method] = (...args) => this._handleLog(method, args);
+      this._consoleWrappers[method] = (...args) => this._handleLog(method, args);
+      console[method] = this._consoleWrappers[method];
     });
 
     // Add support for other console methods without server logging
@@ -127,9 +127,9 @@ class ConsoleIQ {
             stack: error?.stack || null,
             name: error?.name || 'Error'
           }, 'window.onerror');
-          
+
           this._handleGlobalError('window.onerror', enhancedError);
-          
+
           if (typeof this.originalErrorHandlers.onerror === 'function') {
             return this.originalErrorHandlers.onerror(message, source, lineno, colno, error);
           }
@@ -200,7 +200,7 @@ class ConsoleIQ {
    */
   _enhanceError(error, source) {
     if (!this.config.enhanceErrors) return error;
-    
+
     const stack = error.stack || new Error().stack;
     const enhancedError = {
       ...error,
@@ -243,7 +243,7 @@ class ConsoleIQ {
     if (reason instanceof Error) {
       return this._enhanceError(reason, 'unhandledRejection');
     }
-    
+
     return {
       message: String(reason),
       name: 'UnhandledRejection',
@@ -263,7 +263,7 @@ class ConsoleIQ {
    */
   _cleanStack(stack) {
     if (!stack) return '';
-    
+
     const lines = stack.split('\n');
     // Remove ConsoleIQ internal traces from the stack
     const filtered = lines.filter(line => !line.includes('ConsoleIQ.'));
@@ -298,15 +298,15 @@ class ConsoleIQ {
    */
   _formatError(type, errorInfo) {
     let message = `[${this.config.name}] [${type}] ${errorInfo.message || errorInfo}`;
-    
+
     if (errorInfo.source) {
       message += ` (source: ${errorInfo.source})`;
     }
-    
+
     if (errorInfo.lineno && errorInfo.colno) {
       message += ` at ${errorInfo.lineno}:${errorInfo.colno}`;
     }
-    
+
     return message;
   }
 
@@ -317,7 +317,7 @@ class ConsoleIQ {
    */
   _handleRejection(reason) {
     const errorMessage = this._formatError('unhandledRejection', reason);
-    
+
     if (this.config.endpoint && this.config.allowedLevels.includes('error')) {
       this._sendToServer('error', [errorMessage, reason]);
     }
@@ -365,11 +365,11 @@ class ConsoleIQ {
     if (this.config.endpoint && this.config.allowedLevels.includes(level)) {
       this._sendToServer(level, enhancedArgs);
     }
-    
+
     // Output to console only
     if (!this.config.silent) {
       this._applyColorAndLog(level, ...enhancedArgs);
-      
+
       // Automatically add stack trace for errors if enabled
       if (level === 'error' && this.config.autoTraceErrors) {
         const errorArg = enhancedArgs.find(arg => arg instanceof Error);
@@ -393,7 +393,7 @@ class ConsoleIQ {
       this.originalConsole[level === 'text' ? 'log' : level](...args);
       return;
     }
-    
+
     const colorized = applyColor(level, args);
     this.originalConsole[level === 'text' ? 'log' : level](...colorized);
   }
@@ -431,7 +431,7 @@ class ConsoleIQ {
         headers['Authorization'] = `Bearer ${this.config.apiKey}`;
       }
 
-      await axios.post(this.config.endpoint, logData, { 
+      await axios.post(this.config.endpoint, logData, {
         headers,
         timeout: 5000 // 5 second timeout
       });
@@ -451,7 +451,7 @@ class ConsoleIQ {
    */
   _serializeObject(obj, depth = 0) {
     if (depth > this.config.maxErrorDepth) return '[Max Depth Reached]';
-    
+
     if (obj instanceof Error) {
       return {
         __type: 'Error',
@@ -460,24 +460,24 @@ class ConsoleIQ {
         stack: obj.stack
       };
     }
-    
+
     if (typeof obj !== 'object' || obj === null) {
       return obj;
     }
-    
+
     // Handle circular references
     const seen = new WeakSet();
     const serialize = (value, currentDepth) => {
       if (currentDepth > this.config.maxErrorDepth) return '[Max Depth Reached]';
-      
+
       if (typeof value === 'object' && value !== null) {
         if (seen.has(value)) return '[Circular Reference]';
         seen.add(value);
-        
+
         if (Array.isArray(value)) {
           return value.map(item => serialize(item, currentDepth + 1));
         }
-        
+
         const result = {};
         for (const key in value) {
           if (Object.prototype.hasOwnProperty.call(value, key)) {
@@ -488,7 +488,7 @@ class ConsoleIQ {
       }
       return value;
     };
-    
+
     return serialize(obj, depth);
   }
 
@@ -534,20 +534,45 @@ class ConsoleIQ {
    */
   restore() {
     if (!this._initialized) return this;
-    
-    // Restore all original console methods
-    Object.keys(this.originalConsole).forEach(method => {
-      console[method] = this.originalConsole[method];
-    });
 
-    // Remove custom methods
-    delete console.text;
+    // Store the current overridden methods
+    const currentConsole = {
+      log: console.log,
+      info: console.info,
+      warn: console.warn,
+      error: console.error,
+      debug: console.debug,
+      dir: console.dir,
+      table: console.table,
+      time: console.time,
+      timeEnd: console.timeEnd,
+      trace: console.trace,
+      assert: console.assert,
+      text: console.text
+    };
+
+    // Only restore methods that we actually overrode
+    Object.keys(this.originalConsole).forEach(method => {
+      if (console[method] === this._consoleWrappers?.[method]) {
+        console[method] = this.originalConsole[method];
+      }
+    });
+    
+
+    // Remove custom text method only if it's ours
+    if (console.text === this._textWrapper) {
+      delete console.text;
+    }
 
     // Restore error handlers
     if (typeof window !== 'undefined' && window.addEventListener) {
       // Browser
-      window.onerror = this.originalErrorHandlers.onerror;
-      window.onunhandledrejection = this.originalErrorHandlers.onunhandledrejection;
+      if (window.onerror === this._handleWindowError) {
+        window.onerror = this.originalErrorHandlers.onerror;
+      }
+      if (window.onunhandledrejection === this._handleWindowRejection) {
+        window.onunhandledrejection = this.originalErrorHandlers.onunhandledrejection;
+      }
     } else if (typeof process !== 'undefined') {
       // Node.js
       if (typeof this.originalErrorHandlers.onerror === 'function') {
@@ -559,12 +584,12 @@ class ConsoleIQ {
         process.on('unhandledRejection', this.originalErrorHandlers.onunhandledrejection);
       }
     }
-    
+
     // Restore console.error if we modified it
     if (this.config.captureConsoleErrors && this.originalConsoleError) {
       console.error = this.originalConsoleError;
     }
-    
+
     this._initialized = false;
     return this;
   }
