@@ -1,17 +1,17 @@
 /**
- * ConsoleText - Enhanced console logging with remote capabilities
- * @module ConsoleText
+ * ConsoleIQ - Enhanced console logging with remote capabilities
+ * @module ConsoleIQ
  */
 
 const axios = require('axios');
 const { applyColor } = require('./utils/colorizer');
 
 /**
- * ConsoleText class for enhancing and extending console functionality
+ * ConsoleIQ class for enhancing and extending console functionality
  */
-class ConsoleText {
+class ConsoleIQ {
   /**
-   * Create a new ConsoleText instance
+   * Create a new ConsoleIQ instance
    * @param {Object} config - Configuration options
    * @param {string} [config.endpoint] - URL endpoint for remote logging
    * @param {string} [config.apiKey] - API key for authentication with remote endpoint
@@ -22,12 +22,12 @@ class ConsoleText {
    */
   constructor(config = {}) {
     this.config = {
-      endpoint: config.endpoint || "https://api.consoletext.xyz/logs",
+      endpoint: config.endpoint || "https://api.consoleiq.xyz/logs",
       apiKey: config.apiKey || null,
       colorize: config.colorize !== false,
       silent: config.silent || false,
-      name: config.name || 'ConsoleText',
-      allowedLevels: config.allowedLevels || ['text']
+      name: config.name || 'ConsoleIQ',
+      allowedLevels: config.allowedLevels || ['text','error']
     };
 
     // Store original console methods
@@ -48,7 +48,7 @@ class ConsoleText {
 
   /**
    * Initialize by overriding console methods
-   * @returns {ConsoleText} - The current instance for chaining
+   * @returns {ConsoleIQ} - The current instance for chaining
    */
   init() {
     // Override standard console methods
@@ -147,13 +147,13 @@ class ConsoleText {
       await axios.post(this.config.endpoint, logData, { headers });
     } catch (error) {
       // Silently fail or log error to original console
-      this.originalConsole.error(`ConsoleText: Failed to send log: ${error.message}`);
+      this.originalConsole.error(`ConsoleIQ: Failed to send log: ${error.message}`);
     }
   }
 
   /**
    * Reset console to original behavior
-   * @returns {ConsoleText} - The current instance for chaining
+   * @returns {ConsoleIQ} - The current instance for chaining
    */
   restore() {
     // Restore all original methods
@@ -168,4 +168,4 @@ class ConsoleText {
   }
 }
 
-module.exports = ConsoleText;
+module.exports = ConsoleIQ;

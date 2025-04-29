@@ -1,4 +1,4 @@
-# ConsoleText
+# ConsoleIQ
 
 Enhanced console logging with colorization and remote capabilities for Node.js applications.
 
@@ -13,16 +13,16 @@ Enhanced console logging with colorization and remote capabilities for Node.js a
 ## Installation
 
 ```bash
-npm install consoletext
+npm install consoleiq
 ```
 
 ## Quick Start
 
 ```javascript
-const { createConsoleText } = require('consoletext');
+const { createConsoleIQ } = require('consoleiq');
 
 // Initialize with default options
-const ConsoleText = createConsoleText();
+const ConsoleIQ = createConsoleIQ();
 
 // Use enhanced console methods
 console.log('Regular log message');
@@ -35,15 +35,15 @@ console.debug('Debug message in green');
 console.text('This can be sent to a remote server if configured');
 
 // When done, restore original console behavior
-ConsoleText.restore();
+ConsoleIQ.restore();
 ```
 
 ## Configuration
 
 ```javascript
-const { createConsoleText } = require('consoletext');
+const { createConsoleIQ } = require('consoleiq');
 
-const ConsoleText = createConsoleText({  
+const ConsoleIQ = createConsoleIQ({  
   // API key for authentication (optional)
   apiKey: 'your-api-key',
   
@@ -61,9 +61,9 @@ const ConsoleText = createConsoleText({
 
 ```javascript
 // src/logger.js
-import { createConsoleText } from 'consoletext';
+import { createConsoleIQ } from 'consoleiq';
 
-export const logger = createConsoleText({
+export const logger = createConsoleIQ({
   apiKey: process.env.REACT_APP_LOGGING_API_KEY
 });
 ```
@@ -94,11 +94,11 @@ function App() {
 ```javascript
 // src/hooks/useLogger.js
 import { useEffect } from 'react';
-import { createConsoleText } from 'consoleText';
+import { createConsoleIQ } from 'consoleIQ';
 
 export function useLogger(config = {}) {
   useEffect(() => {
-    const logger = createConsoleText(config);
+    const logger = createConsoleIQ(config);
     logger.init();
     
     return () => logger.restore();
@@ -121,7 +121,7 @@ Only the `console.text()` method sends logs to the remote server. Other console 
 
 ```javascript
 // Configure with remote endpoint
-const ConsoleText = createConsoleText({
+const ConsoleIQ = createConsoleIQ({
   apiKey: 'your-api-key'
 });
 
@@ -138,10 +138,10 @@ console.info('Local info message');
 ### Manual Initialization
 
 ```javascript
-const { ConsoleText } = require('consoleText');
+const { ConsoleIQ } = require('consoleIQ');
 
 // Create instance without auto-initialization
-const logger = new ConsoleText({
+const logger = new ConsoleIQ({
   colorize: true,
 });
 
@@ -157,9 +157,9 @@ logger.restore();
 
 ## API Reference
 
-### `createConsoleText(config)`
+### `createConsoleIQ(config)`
 
-Creates and initializes a new ConsoleText instance.
+Creates and initializes a new ConsoleIQ instance.
 
 - `config` (Object): Configuration options
   - `endpoint` (String): URL for remote logging
@@ -167,9 +167,9 @@ Creates and initializes a new ConsoleText instance.
   - `colorize` (Boolean): Whether to colorize console output (default: true)
   - `silent` (Boolean): Whether to suppress console output (default: false)
 
-Returns an initialized ConsoleText instance.
+Returns an initialized ConsoleIQ instance.
 
-### `ConsoleText`
+### `ConsoleIQ`
 
 Class that provides console enhancement functionality.
 

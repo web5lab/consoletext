@@ -1,20 +1,20 @@
 /**
- * ConsoleText - Enhanced console logging with remote capabilities
- * @module consoleText
+ * ConsoleIQ - Enhanced console logging with remote capabilities
+ * @module consoleIQ
  */
 
-const ConsoleText = require('./src/ConsoleText');
+const ConsoleIQ = require('./src/ConsoleIQ');
 
 /**
- * Create and initialize a new ConsoleText instance
+ * Create and initialize a new ConsoleIQ instance
  * @param {Object} config - Configuration options
- * @returns {ConsoleText} - Initialized ConsoleText instance
+ * @returns {ConsoleIQ} - Initialized ConsoleIQ instance
  */
-function createConsoleText(config = {}) {
-  return new ConsoleText(config).init();
+function createConsoleIQ(config = {}) {
+  return new ConsoleIQ(config).init();
 }
 
 module.exports = {
-  ConsoleText,
-  createConsoleText
+  ConsoleIQ,
+  createConsoleIQ
 };

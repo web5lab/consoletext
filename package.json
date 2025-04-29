@@ -1,5 +1,5 @@
 {
-  "name": "consoletext",
+  "name": "consoleiq",
   "version": "1.0.6",
   "description": "Enhanced console logging with remote capabilities",
   "main": "index.js",
@@ -30,12 +30,12 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/web5lab/consoleText.git"
+    "url": "git+https://github.com/web5lab/consoleIQ.git"
   },
   "bugs": {
-    "url": "https://github.com/web5lab/consoleText/issues"
+    "url": "https://github.com/web5lab/consoleIQ/issues"
   },
-  "homepage": "https://consoletext.xyz/",
+  "homepage": "https://consoleiq.xyz/",
   "files": [
     "index.js",
     "src/**/*",

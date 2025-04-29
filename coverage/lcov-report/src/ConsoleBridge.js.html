@@ -3,7 +3,7 @@
 <html lang="en">
 
 <head>
-    <title>Code coverage report for src/ConsoleText.js</title>
+    <title>Code coverage report for src/ConsoleIQ.js</title>
     <meta charset="utf-8" />
     <link rel="stylesheet" href="../prettify.css" />
     <link rel="stylesheet" href="../base.css" />
@@ -19,7 +19,7 @@
 <body>
 <div class='wrapper'>
     <div class='pad1'>
-        <h1><a href="../index.html">All files</a> / <a href="index.html">src</a> ConsoleText.js</h1>
+        <h1><a href="../index.html">All files</a> / <a href="index.html">src</a> ConsoleIQ.js</h1>
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
@@ -378,8 +378,8 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span></td><td class="text"><pre class="prettyprint lang-js">/**
- * ConsoleText - Enhanced console logging with remote capabilities
- * @module ConsoleText
+ * ConsoleIQ - Enhanced console logging with remote capabilities
+ * @module ConsoleIQ
  */
 &nbsp;
 const axios = require('axios');
@@ -387,11 +387,11 @@ const chalk = require('chalk');
 const { applyColor } = require('./utils/colorizer');
 &nbsp;
 /**
- * ConsoleText class for enhancing and extending console functionality
+ * ConsoleIQ class for enhancing and extending console functionality
  */
-class ConsoleText {
+class ConsoleIQ {
   /**
-   * Create a new ConsoleText instance
+   * Create a new ConsoleIQ instance
    * @param {Object} config - Configuration options
    * @param {string} [config.endpoint] - URL endpoint for remote logging
    * @param {string} [config.apiKey] - API key for authentication with remote endpoint
@@ -424,7 +424,7 @@ class ConsoleText {
 &nbsp;
   /**
    * Initialize by overriding console methods
-   * @returns {ConsoleText} - The current instance for chaining
+   * @returns {ConsoleIQ} - The current instance for chaining
    */
   init() {
     // Override standard console methods
@@ -513,13 +513,13 @@ class ConsoleText {
       await axios.post(this.config.endpoint, logData, { headers });
     } catch (error) {
       // Silently fail or log error to original console
-<span class="cstat-no" title="statement not covered" >      this.originalConsole.error(`ConsoleText: Failed to send log: ${error.message}`);</span>
+<span class="cstat-no" title="statement not covered" >      this.originalConsole.error(`ConsoleIQ: Failed to send log: ${error.message}`);</span>
     }
   }
 &nbsp;
   /**
    * Reset console to original behavior
-   * @returns {ConsoleText} - The current instance for chaining
+   * @returns {ConsoleIQ} - The current instance for chaining
    */
   restore() {
     // Restore all original methods
@@ -534,7 +534,7 @@ class ConsoleText {
   }
 }
 &nbsp;
-module.exports = ConsoleText;</pre></td></tr></table></pre>
+module.exports = ConsoleIQ;</pre></td></tr></table></pre>
 
                 <div class='push'></div><!-- for sticky footer -->
             </div><!-- /wrapper -->

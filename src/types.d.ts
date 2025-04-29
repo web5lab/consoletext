@@ -1,12 +1,12 @@
 /**
- * Type definitions for ConsoleText
+ * Type definitions for ConsoleIQ
  */
 
-declare module 'consoletext' {
+declare module 'consoleiq' {
   /**
-   * Configuration options for ConsoleText
+   * Configuration options for ConsoleIQ
    */
-  export interface ConsoleTextConfig {
+  export interface ConsoleIQConfig {
     /**
      * URL endpoint for remote logging
      */
@@ -31,7 +31,7 @@ declare module 'consoletext' {
 
     /**
      * Name for the logger instance (included in server logs)
-     * @default 'ConsoleText'
+     * @default 'ConsoleIQ'
      */
     name?: string;
 
@@ -44,13 +44,13 @@ declare module 'consoletext' {
   }
 
   /**
-   * ConsoleText class for enhancing and extending console functionality
+   * ConsoleIQ class for enhancing and extending console functionality
    */
-  export class ConsoleText {
+  export class ConsoleIQ {
     /**
-     * Create a new ConsoleText instance
+     * Create a new ConsoleIQ instance
      */
-    constructor(config?: ConsoleTextConfig);
+    constructor(config?: ConsoleIQConfig);
     
     /**
      * Initialize by overriding console methods
@@ -64,9 +64,9 @@ declare module 'consoletext' {
   }
 
   /**
-   * Create and initialize a new ConsoleText instance
+   * Create and initialize a new ConsoleIQ instance
    */
-  export function createConsoleText(config?: ConsoleTextConfig): ConsoleText;
+  export function createConsoleIQ(config?: ConsoleIQConfig): ConsoleIQ;
 }
 
 /**

@@ -1,10 +1,10 @@
-const ConsoleText = require('../src/ConsoleText');
+const ConsoleIQ = require('../src/ConsoleIQ');
 const axios = require('axios');
 
 jest.mock('axios');
 
-describe('ConsoleText', () => {
-  let consoleText;
+describe('ConsoleIQ', () => {
+  let consoleIQ;
   let originalConsole;
 
   beforeEach(() => {
@@ -22,7 +22,7 @@ describe('ConsoleText', () => {
       trace: console.trace
     };
 
-    consoleText = new ConsoleText();
+    consoleIQ = new ConsoleIQ();
   });
 
   afterEach(() => {
@@ -35,8 +35,8 @@ describe('ConsoleText', () => {
   });
 
   test('should create instance with default config', () => {
-    expect(consoleText.config).toEqual({
-      endpoint: "https://api.consoletext.xyz/logs",
+    expect(consoleIQ.config).toEqual({
+      endpoint: "https://api.consoleiq.xyz/logs",
       apiKey: null,
       colorize: true,
       silent: false
@@ -50,12 +50,12 @@ describe('ConsoleText', () => {
       colorize: false,
       silent: true
     };
-    const instance = new ConsoleText(config);
+    const instance = new ConsoleIQ(config);
     expect(instance.config).toEqual(config);
   });
 
   test('should initialize and override console methods', () => {
-    consoleText.init();
+    consoleIQ.init();
     
     expect(typeof console.log).toBe('function');
     expect(typeof console.info).toBe('function');
@@ -66,8 +66,8 @@ describe('ConsoleText', () => {
   });
 
   test('should restore original console methods', () => {
-    consoleText.init();
-    consoleText.restore();
+    consoleIQ.init();
+    consoleIQ.restore();
     
     expect(console.log).toBe(originalConsole.log);
     expect(console.info).toBe(originalConsole.info);
@@ -79,7 +79,7 @@ describe('ConsoleText', () => {
 
   test('should respect silent mode', () => {
     const mockConsole = jest.spyOn(console, 'log').mockImplementation();
-    const silentLogger = new ConsoleText({ silent: true }).init();
+    const silentLogger = new ConsoleIQ({ silent: true }).init();
     
     console.log('test message');
     expect(mockConsole).not.toHaveBeenCalled();
@@ -95,7 +95,7 @@ describe('ConsoleText', () => {
 
     axios.post.mockResolvedValueOnce({ status: 200 });
 
-    const logger = new ConsoleText({ endpoint, apiKey }).init();
+    const logger = new ConsoleIQ({ endpoint, apiKey }).init();
     await console.text(message);
 
     expect(axios.post).toHaveBeenCalledWith(
@@ -117,7 +117,7 @@ describe('ConsoleText', () => {
 
   test('should handle non-string arguments', () => {
     const mockConsole = jest.spyOn(console, 'log').mockImplementation();
-    const logger = new ConsoleText().init();
+    const logger = new ConsoleIQ().init();
 
     const testObject = { test: 'value' };
     console.text(testObject);
@@ -132,7 +132,7 @@ describe('ConsoleText', () => {
     const dirSpy = jest.spyOn(console, 'dir').mockImplementation();
     const tableSpy = jest.spyOn(console, 'table').mockImplementation();
     
-    const logger = new ConsoleText().init();
+    const logger = new ConsoleIQ().init();
 
     console.dir({ test: 'value' });
     console.table([{ test: 'value' }]);

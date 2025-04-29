@@ -1,11 +1,11 @@
 /**
- * Basic usage example for ConsoleText
+ * Basic usage example for ConsoleIQ
  */
 
-const { createConsoleText } = require('../index');
+const { createConsoleIQ } = require('../index');
 
-// Initialize ConsoleText with default settings
-const consoleText = createConsoleText({
+// Initialize ConsoleIQ with default settings
+const consoleIQ = createConsoleIQ({
   // For remote logging (uncomment and add your endpoint)
   // endpoint: 'https://your-logging-api.com/logs',
   // apiKey: 'your-api-key',
@@ -27,5 +27,5 @@ console.text('This message would be sent to the server if endpoint is configured
 console.log('Logging an object:', { user: 'John', role: 'Admin' });
 
 // Restore original console behavior when done
-consoleText.restore();
+consoleIQ.restore();
 console.log('Console is back to normal');

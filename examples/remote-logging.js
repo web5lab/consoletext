@@ -1,11 +1,11 @@
 /**
- * Remote logging example for ConsoleText
+ * Remote logging example for ConsoleIQ
  */
 
-const { createConsoleText } = require('../index');
+const { createConsoleIQ } = require('../index');
 
-// Initialize ConsoleText with remote logging configuration
-const consoleText = createConsoleText({
+// Initialize ConsoleIQ with remote logging configuration
+const consoleIQ = createConsoleIQ({
   endpoint: 'https://example.com/api/logs', // Replace with your actual endpoint
   apiKey: 'your-api-key-here', // Replace with your actual API key
   colorize: true
@@ -28,6 +28,6 @@ console.text('User action:', {
 
 // When you're done, restore the original console
 setTimeout(() => {
-  consoleText.restore();
+  consoleIQ.restore();
   console.log('Console is back to normal');
 }, 1000);
