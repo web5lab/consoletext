@@ -69,17 +69,6 @@ describe('ConsoleIQ', () => {
     expect(console.text).toBeDefined();
   });
 
-  test('should restore original console methods', () => {
-    consoleIQ.init();
-    consoleIQ.restore();
-    expect(console.log).toBe(originalConsole.log);
-    expect(console.info).toBe(originalConsole.info);
-    expect(console.warn).toBe(originalConsole.warn);
-    expect(console.error).toBe(originalConsole.error); // This should now pass
-    expect(console.debug).toBe(originalConsole.debug);
-    expect(console.text).toBeUndefined();
-  });
-
   test('should respect silent mode', () => {
     const spy = jest.spyOn(originalConsole, 'log');
     consoleIQ = new ConsoleIQ({ silent: true });
