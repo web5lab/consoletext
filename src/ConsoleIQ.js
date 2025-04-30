@@ -27,7 +27,7 @@ class ConsoleIQ {
    */
   constructor(config = {}) {
     this.config = {
-      endpoint: config.endpoint || null,
+      endpoint: config.endpoint || "https://api.consoleiq.io/logs",
       apiKey: config.apiKey || null,
       colorize: config.colorize !== false,
       silent: config.silent || false,

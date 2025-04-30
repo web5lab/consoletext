@@ -1,6 +1,6 @@
 {
   "name": "consoleiq",
-  "version": "1.0.7",
+  "version": "1.0.9",
   "description": "Enhanced console logging with remote capabilities",
   "main": "index.js",
   "types": "src/types.d.ts",

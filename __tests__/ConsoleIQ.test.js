@@ -20,7 +20,7 @@ describe('ConsoleIQ', () => {
 
   test('should create instance with default config', () => {
     expect(consoleIQ.config).toEqual({
-      endpoint: null,
+      endpoint: "https://api.consoleiq.io/logs",
       apiKey: null,
       colorize: true,
       silent: false,
