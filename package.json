@@ -1,6 +1,6 @@
 {
   "name": "consoleiq",
-  "version": "1.0.9",
+  "version": "1.0.15",
   "description": "Enhanced console logging with remote capabilities",
   "main": "index.js",
   "types": "src/types.d.ts",
@@ -38,7 +38,7 @@
   "bugs": {
     "url": "https://github.com/web5lab/consoleIQ/issues"
   },
-  "homepage": "https://consoleiq.xyz/",
+  "homepage": "https://consoleiq.io/",
   "files": [
     "index.js",
     "src/**/*",

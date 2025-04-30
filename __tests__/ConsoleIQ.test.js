@@ -97,7 +97,7 @@ describe('ConsoleIQ', () => {
       expect.objectContaining({
         level: 'text',
         name: 'TestLogger',
-        messages: [message]
+        message: message
       }),
       expect.objectContaining({
         headers: {

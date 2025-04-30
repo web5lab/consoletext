@@ -399,7 +399,7 @@ class ConsoleIQ {
   }
 
   /**
-   * Send logs to server (only if configured & allowed)
+   * Send logs to server preserving original console format
    * @private
    * @param {string} level - Log level
    * @param {Array} args - Arguments to log
@@ -409,18 +409,18 @@ class ConsoleIQ {
     if (!this.config.endpoint) return;
 
     try {
+      // Create a payload that preserves the original console data structure
       const logData = {
         level,
-        messages: args.map(arg => {
-          if (typeof arg === 'object' && arg !== null) {
-            return this._serializeObject(arg);
-          }
-          return String(arg);
-        }),
+        // Console-formatted output
+        message: this._formatConsoleLike(level, args),
+        // Additional metadata
         timestamp: new Date().toISOString(),
         name: this.config.name,
         environment: this.config.environment,
-        metadata: this._getEnvironmentMetadata()
+        metadata: this._getEnvironmentMetadata(),
+        // Stack trace for errors
+        ...(level === 'error' ? { stack: this._getErrorStack(args) } : {})
       };
 
       const headers = {
@@ -433,7 +433,7 @@ class ConsoleIQ {
 
       await axios.post(this.config.endpoint, logData, {
         headers,
-        timeout: 5000 // 5 second timeout
+        timeout: 5000
       });
     } catch (error) {
       if (!this.config.silent) {
@@ -443,53 +443,123 @@ class ConsoleIQ {
   }
 
   /**
-   * Serialize objects while handling circular references and errors
+   * Prepare data for serialization while preserving structure
    * @private
-   * @param {Object} obj - Object to serialize
-   * @param {number} depth - Current depth
-   * @returns {Object} - Serialized object
+   * @param {any} data - Data to prepare
+   * @param {Set} [seen] - Track circular references
+   * @param {number} [depth=0] - Current depth
+   * @returns {any} - Prepared data
    */
-  _serializeObject(obj, depth = 0) {
+  _prepareForSerialization(data, seen = new WeakSet(), depth = 0) {
     if (depth > this.config.maxErrorDepth) return '[Max Depth Reached]';
-
-    if (obj instanceof Error) {
-      return {
-        __type: 'Error',
-        name: obj.name,
-        message: obj.message,
-        stack: obj.stack
-      };
+  
+    // Handle primitives
+    if (data === null || typeof data !== 'object') {
+      return data;
     }
-
-    if (typeof obj !== 'object' || obj === null) {
-      return obj;
-    }
-
+  
     // Handle circular references
-    const seen = new WeakSet();
-    const serialize = (value, currentDepth) => {
-      if (currentDepth > this.config.maxErrorDepth) return '[Max Depth Reached]';
-
-      if (typeof value === 'object' && value !== null) {
-        if (seen.has(value)) return '[Circular Reference]';
-        seen.add(value);
-
-        if (Array.isArray(value)) {
-          return value.map(item => serialize(item, currentDepth + 1));
-        }
-
-        const result = {};
-        for (const key in value) {
-          if (Object.prototype.hasOwnProperty.call(value, key)) {
-            result[key] = serialize(value[key], currentDepth + 1);
+    if (seen.has(data)) {
+      return '[Circular Reference]';
+    }
+    seen.add(data);
+  
+    // Handle errors specially
+    if (data instanceof Error) {
+      const errorObj = {
+        __type: 'Error',
+        name: data.name,
+        message: data.message,
+        stack: data.stack
+      };
+  
+      // Include any custom error properties
+      Object.getOwnPropertyNames(data).forEach(key => {
+        if (!['name', 'message', 'stack'].includes(key)) {
+          try {
+            errorObj[key] = this._prepareForSerialization(data[key], seen, depth + 1);
+          } catch (e) {
+            errorObj[key] = '[Unable to serialize]';
           }
         }
-        return result;
+      });
+  
+      return errorObj;
+    }
+  
+    // Handle arrays
+    if (Array.isArray(data)) {
+      return data.map(item => {
+        try {
+          return this._prepareForSerialization(item, seen, depth + 1);
+        } catch (e) {
+          return '[Array item unable to serialize]';
+        }
+      });
+    }
+  
+    // Handle plain objects
+    const result = {};
+    for (const key in data) {
+      if (Object.prototype.hasOwnProperty.call(data, key)) {
+        try {
+          result[key] = this._prepareForSerialization(data[key], seen, depth + 1);
+        } catch (e) {
+          result[key] = '[Unable to serialize property]';
+        }
       }
-      return value;
-    };
+    }
+    return result;
+  }
 
-    return serialize(obj, depth);
+  /**
+   * Format data like the console would display it
+   * @private
+   * @param {string} level - Log level
+   * @param {Array} args - Arguments to format
+   * @returns {string} - Formatted string
+   */
+  _formatConsoleLike(level, args) {
+    try {
+      return args.map(arg => {
+        if (typeof arg === 'object' && arg !== null) {
+          try {
+            // Handle Errors specially
+            if (arg instanceof Error) {
+              return JSON.stringify({
+                message: arg.message,
+                name: arg.name,
+                stack: arg.stack,
+                ...Object.getOwnPropertyDescriptors(arg)
+              }, null, 2);
+            }
+            // Handle regular objects
+            return JSON.stringify(arg, null, 2);
+          } catch (e) {
+            // Fallback if JSON.stringify fails (circular references etc.)
+            return String(arg);
+          }
+        }
+        return String(arg);
+      }).join(' ');
+    } catch (e) {
+      // Fallback to simple string joining if everything fails
+      return args.map(arg => String(arg)).join(' ');
+    }
+  }
+
+  /**
+   * Get error stack from arguments if available
+   * @private
+   * @param {Array} args - Arguments to check
+   * @returns {string|null} - Stack trace or null
+   */
+  _getErrorStack(args) {
+    const errorArg = args.find(arg => arg instanceof Error);
+    if (errorArg?.stack) {
+      return errorArg.stack;
+    }
+    return null;
   }
 
   /**
@@ -498,13 +568,9 @@ class ConsoleIQ {
    * @returns {Object} - Environment metadata
    */
   _getEnvironmentMetadata() {
-    const metadata = {
-      timestamp: new Date().toISOString(),
-      loggerName: this.config.name
-    };
-
     if (typeof window !== 'undefined') {
-      metadata.browser = {
+      return {
+        type: 'browser',
         url: window.location.href,
         userAgent: navigator.userAgent,
         platform: navigator.platform,
@@ -513,10 +579,9 @@ class ConsoleIQ {
           height: window.screen.height
         }
       };
-    }
-
-    if (typeof process !== 'undefined') {
-      metadata.node = {
+    } else if (typeof process !== 'undefined') {
+      return {
+        type: 'node',
         version: process.version,
         pid: process.pid,
         cwd: process.cwd(),
@@ -524,8 +589,7 @@ class ConsoleIQ {
         memoryUsage: process.memoryUsage()
       };
     }
-
-    return metadata;
+    return { type: 'unknown' };
   }
 
   /**
@@ -535,29 +599,12 @@ class ConsoleIQ {
   restore() {
     if (!this._initialized) return this;
 
-    // Store the current overridden methods
-    const currentConsole = {
-      log: console.log,
-      info: console.info,
-      warn: console.warn,
-      error: console.error,
-      debug: console.debug,
-      dir: console.dir,
-      table: console.table,
-      time: console.time,
-      timeEnd: console.timeEnd,
-      trace: console.trace,
-      assert: console.assert,
-      text: console.text
-    };
-
     // Only restore methods that we actually overrode
     Object.keys(this.originalConsole).forEach(method => {
       if (console[method] === this._consoleWrappers?.[method]) {
         console[method] = this.originalConsole[method];
       }
     });
-    
 
     // Remove custom text method only if it's ours
     if (console.text === this._textWrapper) {

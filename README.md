@@ -1,14 +1,21 @@
 # ConsoleIQ
 
-Enhanced console logging with colorization and remote capabilities for Node.js applications.
+![npm version](https://img.shields.io/npm/v/consoleiq)
+![license](https://img.shields.io/npm/l/consoleiq)
+![downloads](https://img.shields.io/npm/dm/consoleiq)
+
+> Enhanced console logging with remote capabilities for any JavaScript environment
+
+ConsoleIQ provides powerful console logging enhancements with built-in remote reporting, error handling, and framework integrations - all in a lightweight package.
 
 ## Features
 
-- 🎨 **Colorized Console Output**: Improve readability with color-coded log levels
-- 🌐 **Remote Logging**: Send selected logs to a remote server endpoint
-- 🔄 **Preserve Original Console**: Easily restore original console behavior
-- 🛠️ **Configurable**: Customize behavior with simple options
-- 📝 **Custom Log Method**: Special `console.text()` method for remote logging
+- 🌐 **Universal** - Works in browsers, Node.js, and any JavaScript runtime with consistent API
+- ☁️ **Remote Ready** - Built-in support for sending logs to any HTTP endpoint with configurable levels
+- 🛡️ **Error Handling** - Automatic error capturing with stack traces and environment context
+- 🎨 **Colorized Output** - Enhanced terminal/console output with customizable colorization
+- 🔄 **Framework Support** - Integration examples for React, Vue, Angular, and Node.js/Express
+- 🪶 **Lightweight** - Zero dependencies (except axios for HTTP requests)
 
 ## Installation
 
@@ -16,172 +23,201 @@ Enhanced console logging with colorization and remote capabilities for Node.js a
 npm install consoleiq
 ```
 
-## Quick Start
+## Basic Usage
 
 ```javascript
-const { createConsoleIQ } = require('consoleiq');
+const ConsoleIQ = require('consoleiq');
 
 // Initialize with default options
-const ConsoleIQ = createConsoleIQ();
+const logger = new ConsoleIQ().init();
 
 // Use enhanced console methods
 console.log('Regular log message');
-console.info('Info message in blue');
-console.warn('Warning message in yellow');
-console.error('Error message in red');
-console.debug('Debug message in green');
+console.info('Info message');
+console.warn('Warning message');
+console.error('Error message');
+console.debug('Debug message');
 
-// Use custom text method (for remote logging)
-console.text('This can be sent to a remote server if configured');
-
-// When done, restore original console behavior
-ConsoleIQ.restore();
+// Custom text method for remote logging
+console.text('This will be sent to remote endpoint if configured');
 ```
 
 ## Configuration
 
 ```javascript
-const { createConsoleIQ } = require('consoleiq');
-
-const ConsoleIQ = createConsoleIQ({  
-  // API key for authentication (optional)
-  apiKey: 'your-api-key',
-  
-  // Enable/disable colorization (default: true)
-  colorize: true,
-  
-  // Enable/disable console output (default: false)
-  silent: false
-});
-```
-
-## Using with React
-
-### Basic Setup
-
-```javascript
-// src/logger.js
-import { createConsoleIQ } from 'consoleiq';
-
-export const logger = createConsoleIQ({
-  apiKey: process.env.REACT_APP_LOGGING_API_KEY
-});
-```
-
-```javascript
-// src/index.js or App.js
-import { logger } from './logger';
-
-// Initialize logger early in your app
-logger.init();
-
-// Use in your components
-function App() {
-  useEffect(() => {
-    console.info('App mounted');
-    console.text('This will be sent to the server');
-    
-    // Cleanup on unmount
-    return () => logger.restore();
-  }, []);
-
-  return <div>Your App</div>;
-}
-```
-
-### Custom Hook
-
-```javascript
-// src/hooks/useLogger.js
-import { useEffect } from 'react';
-import { createConsoleIQ } from 'consoleIQ';
-
-export function useLogger(config = {}) {
-  useEffect(() => {
-    const logger = createConsoleIQ(config);
-    logger.init();
-    
-    return () => logger.restore();
-  }, []);
-}
-
-// Usage in component
-function MyComponent() {
-  useLogger({
-    colorize: true
-  });
-
-  return <div>Component with logging</div>;
-}
-```
-
-## Remote Logging
-
-Only the `console.text()` method sends logs to the remote server. Other console methods are enhanced but only output locally.
-
-```javascript
-// Configure with remote endpoint
-const ConsoleIQ = createConsoleIQ({
-  apiKey: 'your-api-key'
-});
-
-// This will be sent to the remote server
-console.text('Important information to log remotely');
-
-// These will only appear in the local console
-console.log('Local log message');
-console.info('Local info message');
-```
-
-## Advanced Usage
-
-### Manual Initialization
-
-```javascript
-const { ConsoleIQ } = require('consoleIQ');
-
-// Create instance without auto-initialization
 const logger = new ConsoleIQ({
+  endpoint: 'https://api.your-log-service.com/logs',
+  apiKey: 'your-api-key-here',
   colorize: true,
-});
-
-// Initialize when ready
-logger.init();
-
-// Use enhanced console
-console.log('Console is now enhanced');
-
-// Restore when done
-logger.restore();
+  silent: false,
+  name: 'MyAppLogger',
+  allowedLevels: ['error', 'warn', 'text'],
+  captureGlobalErrors: true,
+  captureUnhandledRejections: true,
+  autoTraceErrors: true,
+  enhanceErrors: true,
+  maxErrorDepth: 5,
+  environment: 'browser' // or 'node'
+}).init();
 ```
 
-## API Reference
+### Configuration Options
 
-### `createConsoleIQ(config)`
+| Option | Type | Default | Description |
+|--------|------|---------|-------------|
+| `endpoint` | string | `""` | URL endpoint for remote logging |
+| `apiKey` | string | `null` | API key for authentication |
+| `colorize` | boolean | `true` | Enable/disable colored output |
+| `silent` | boolean | `false` | Suppress all console output |
+| `name` | string | `"ConsoleIQ"` | Logger instance name |
+| `allowedLevels` | Array<string> | `["error", "text"]` | Levels to send remotely |
+| `captureGlobalErrors` | boolean | `true` | Capture uncaught exceptions |
+| `captureUnhandledRejections` | boolean | `true` | Capture promise rejections |
+| `captureConsoleErrors` | boolean | `true` | Capture console.error calls |
+| `autoTraceErrors` | boolean | `true` | Add stack traces to errors |
+| `enhanceErrors` | boolean | `true` | Add context to error objects |
+| `maxErrorDepth` | number | `5` | Max depth for error serialization |
+| `environment` | string | auto-detected | Force environment (browser/node) |
 
-Creates and initializes a new ConsoleIQ instance.
+## Advanced Features
 
-- `config` (Object): Configuration options
-  - `endpoint` (String): URL for remote logging
-  - `apiKey` (String): Authentication key for remote endpoint
-  - `colorize` (Boolean): Whether to colorize console output (default: true)
-  - `silent` (Boolean): Whether to suppress console output (default: false)
+### Environment Detection
 
-Returns an initialized ConsoleIQ instance.
+ConsoleIQ automatically detects whether it's running in a browser or Node.js environment and adjusts its behavior accordingly.
 
-### `ConsoleIQ`
+```javascript
+// In browser:
+logger.getConfig().environment === 'browser'
 
-Class that provides console enhancement functionality.
+// In Node.js:
+logger.getConfig().environment === 'node'
+```
 
-#### Methods
+### Error Handling
 
-- `init()`: Overrides console methods with enhanced versions
-- `restore()`: Restores original console behavior
+Comprehensive error handling with stack traces, environment context, and automatic serialization of complex error objects.
 
-## Examples
+```javascript
+// Enhanced error object includes:
+{
+  message: 'Error message',
+  stack: 'Cleaned stack trace',
+  timestamp: 'ISO string',
+  environment: 'browser',
+  browser: { url, userAgent, platform },
+  // ...and any custom error properties
+}
+```
 
-See the [examples](./examples) directory for more usage examples.
+### Remote Logging
+
+Send logs to any HTTP endpoint with configurable levels and automatic retries. The payload includes rich metadata:
+
+```javascript
+{
+  "level": "error",
+  "message": "Form validation failed",
+  "timestamp": "2025-04-30T12:34:56.789Z",
+  "name": "MyAppLogger",
+  "environment": "browser",
+  "metadata": {
+    "browser": {
+      "url": "https://example.com/form",
+      "userAgent": "Mozilla/5.0...",
+      "platform": "Win32"
+    }
+  },
+  "stack": "Error: Validation failed... (clean stack trace)"
+}
+```
+
+## Framework Integration
+
+### React Hook
+
+```javascript
+import { useEffect } from 'react';
+import ConsoleIQ from 'consoleiq';
+
+export function useConsoleIQ(config) {
+  useEffect(() => {
+    const logger = new ConsoleIQ(config).init();
+    return () => logger.restore();
+  }, [config?.endpoint]); // Re-init if endpoint changes
+}
+```
+
+### Vue Plugin
+
+```javascript
+import ConsoleIQ from 'consoleiq';
+
+export default {
+  install(app, config) {
+    const logger = new ConsoleIQ(config).init();
+    app.provide('logger', logger);
+    app.config.globalProperties.$logger = logger;
+  }
+};
+```
+
+### Angular Service
+
+```javascript
+import { Injectable, OnDestroy } from '@angular/core';
+import ConsoleIQ from 'consoleiq';
+
+@Injectable({ providedIn: 'root' })
+export class LoggerService implements OnDestroy {
+  private logger: ConsoleIQ;
+
+  constructor() {
+    this.logger = new ConsoleIQ({
+      name: 'AngularApp'
+    }).init();
+  }
+
+  ngOnDestroy() {
+    this.logger.restore();
+  }
+}
+```
+
+### Node.js/Express
+
+```javascript
+const ConsoleIQ = require('consoleiq');
+
+// For server-side usage
+const logger = new ConsoleIQ({
+  endpoint: process.env.LOGGING_ENDPOINT,
+  captureGlobalErrors: true,
+  environment: 'node'
+}).init();
+
+// Use in Express middleware
+app.use((req, res, next) => {
+  console.text(`Request: ${req.method} ${req.path}`);
+  next();
+});
+```
+
+## Key Benefits
+
+- Enhanced console methods with colorization and remote logging
+- Automatic capture of uncaught exceptions and promise rejections
+- Error object enhancement with environment context
+- Configurable log levels and filtering
+- Circular reference handling in object serialization
+- Framework-specific integration examples
+- Lightweight with zero dependencies (except axios for HTTP)
 
 ## License
 
-MIT
+MIT © 2025 ConsoleIQ
+
+## Links
+
+- [GitHub Repository](https://github.com/consoleiq/consoleiq)
+- [Documentation](https://consoleiq.io)
+- [Issues](https://github.com/consoleiq/consoleiq/issues)
