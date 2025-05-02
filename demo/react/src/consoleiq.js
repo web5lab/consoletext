@@ -1,8 +1,8 @@
 import { createConsoleIQ } from 'consoleiq';
 
 createConsoleIQ({
-    apiKey: 'console_a17f318c20804db59cac346371b36f48',
-    name: 'dev',
-    allowedLevels: ['log','info','warn','error'],
+    apiKey: 'console_b8c167cd683a481997fe4dd065d4e6ad',
+    name: 'test',
+    allowedLevels: ["log","error"],
     environment: 'browser'
   });
