@@ -36,7 +36,7 @@ from frontend and backend JavaScript/TypeScript projects.
     if (hasAccount === "y" || hasAccount === "yes") {
       // LOGIN FLOW
       try {
-        const res = await axios.post("http://localhost:5005/auth/cli-login", {
+        const res = await axios.post("https://api.consoleiq.io/auth/cli-login", {
           email,
           password,
         });
@@ -50,14 +50,14 @@ from frontend and backend JavaScript/TypeScript projects.
       // REGISTER + OTP FLOW
       const appName = prompt("📛 App Name (e.g. MyApp): ").trim();
       try {
-        await axios.post("http://localhost:5005/auth/create-gmail-account", {
+        await axios.post("https://api.consoleiq.io/auth/create-gmail-account", {
           email,
           password,
           name:appName,
         });
         console.log(green("📨 OTP sent to your email."));
         const otp = prompt("🔢 Enter the OTP: ").trim();
-        const verifyRes = await axios.post("http://localhost:5005/auth/cli-verify-otp", {
+        const verifyRes = await axios.post("https://api.consoleiq.io/auth/cli-verify-otp", {
           email,
           code:otp,
         });
